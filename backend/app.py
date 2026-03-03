@@ -1,3 +1,4 @@
+from flask_cors import CORS
 from flask import Flask, request, jsonify
 from utils.pdf_parser import extract_text_from_pdf
 from utils.text_cleaner import clean_text, preprocess_with_spacy
@@ -11,6 +12,7 @@ from utils.scorer import (
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def home():
