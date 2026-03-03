@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from utils.pdf_parser import extract_text_from_pdf
+from utils.text_cleaner import clean_text, preprocess_with_spacy
 import os
 
 app = Flask(__name__)
@@ -22,13 +23,26 @@ def upload_resume():
     file_path = "temp_resume.pdf"
     file.save(file_path)
 
-    extracted_text = extract_text_from_pdf(file_path)
+    try:
+        # Extract text from PDF
+        extracted_text = extract_text_from_pdf(file_path)
 
-    os.remove(file_path)
+        # Clean and process text
+        cleaned_text = clean_text(extracted_text)
+        processed_text = preprocess_with_spacy(cleaned_text)
 
-    return jsonify({
-        "extracted_text_preview": extracted_text[:500]
-    })
+        return jsonify({
+            "extracted_preview": extracted_text[:300],
+            "cleaned_preview": cleaned_text[:300],
+            "processed_preview": processed_text[:300]
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
 
 if __name__ == "__main__":
