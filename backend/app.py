@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from utils.pdf_parser import extract_text_from_pdf
 from utils.text_cleaner import clean_text, preprocess_with_spacy
+from utils.skill_extractor import extract_skills
 import os
 
 app = Flask(__name__)
@@ -24,17 +25,23 @@ def upload_resume():
     file.save(file_path)
 
     try:
-        # Extract text from PDF
+        # 1️⃣ Extract text
         extracted_text = extract_text_from_pdf(file_path)
 
-        # Clean and process text
+        # 2️⃣ Clean text
         cleaned_text = clean_text(extracted_text)
+
+        # 3️⃣ NLP processing
         processed_text = preprocess_with_spacy(cleaned_text)
 
+        # 4️⃣ Skill extraction
+        skills = extract_skills(processed_text)
+
         return jsonify({
-            "extracted_preview": extracted_text[:300],
-            "cleaned_preview": cleaned_text[:300],
-            "processed_preview": processed_text[:300]
+            "extracted_preview": extracted_text[:200],
+            "cleaned_preview": cleaned_text[:200],
+            "processed_preview": processed_text[:200],
+            "skills_detected": skills
         })
 
     except Exception as e:
