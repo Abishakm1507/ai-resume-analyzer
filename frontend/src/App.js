@@ -18,67 +18,89 @@ function App() {
         "http://127.0.0.1:5000/analyze",
         formData
       );
-
       setResult(response.data);
     } catch (error) {
-      console.error("Error:", error);
+      console.error(error);
     }
   };
 
   return (
-    <div style={{ padding: "40px", fontFamily: "Arial" }}>
-      <h1>AI Resume Analyzer</h1>
+    <div className="min-h-screen bg-gray-100 p-10">
+      <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          AI Resume Analyzer
+        </h1>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Upload Resume (PDF):</label><br />
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={(e) => setResume(e.target.files[0])}
-            required
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="font-semibold">Upload Resume (PDF)</label>
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={(e) => setResume(e.target.files[0])}
+              className="mt-2 block w-full border p-2 rounded"
+              required
+            />
+          </div>
 
-        <br />
+          <div>
+            <label className="font-semibold">Job Description</label>
+            <textarea
+              rows="5"
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              className="mt-2 block w-full border p-2 rounded"
+              required
+            />
+          </div>
 
-        <div>
-          <label>Paste Job Description:</label><br />
-          <textarea
-            rows="6"
-            cols="60"
-            value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
-            required
-          />
-        </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition"
+          >
+            Analyze Resume
+          </button>
+        </form>
 
-        <br />
+        {result && (
+          <div className="mt-10 space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold">ATS Score</h2>
+              <div className="w-full bg-gray-200 rounded-full h-6 mt-2">
+                <div
+                  className="bg-green-500 h-6 rounded-full text-center text-white text-sm"
+                  style={{ width: `${result.ats_score}%` }}
+                >
+                  {result.ats_score}%
+                </div>
+              </div>
+            </div>
 
-        <button type="submit">Analyze Resume</button>
-      </form>
+            <div>
+              <h2 className="text-xl font-semibold">Skill Match</h2>
+              <p className="text-lg">{result.skill_match_percentage}%</p>
+            </div>
 
-      {result && (
-        <div style={{ marginTop: "30px" }}>
-          <h2>Analysis Result</h2>
-          <p><strong>ATS Score:</strong> {result.ats_score}%</p>
-          <p><strong>Skill Match:</strong> {result.skill_match_percentage}%</p>
+            <div>
+              <h2 className="text-xl font-semibold">Missing Skills</h2>
+              <ul className="list-disc list-inside text-red-500">
+                {result.missing_skills.map((skill, index) => (
+                  <li key={index}>{skill}</li>
+                ))}
+              </ul>
+            </div>
 
-          <h3>Missing Skills</h3>
-          <ul>
-            {result.missing_skills.map((skill, index) => (
-              <li key={index}>{skill}</li>
-            ))}
-          </ul>
-
-          <h3>Suggestions</h3>
-          <ul>
-            {result.suggestions.map((suggestion, index) => (
-              <li key={index}>{suggestion}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+            <div>
+              <h2 className="text-xl font-semibold">Suggestions</h2>
+              <ul className="list-disc list-inside text-blue-600">
+                {result.suggestions.map((suggestion, index) => (
+                  <li key={index}>{suggestion}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
