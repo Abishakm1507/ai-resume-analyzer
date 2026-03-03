@@ -1,2 +1,20 @@
-# ai-resume-analyzer
-AI-powered Resume Analyzer that evaluates ATS score, skill gap, and provides improvement suggestions using NLP and TF-IDF.
+# AI Resume Analyzer
+
+AI-powered Resume Analyzer that evaluates:
+
+- ATS Score
+- Skill Gap Analysis
+- Missing Keywords
+- Resume Improvement Suggestions
+
+## Tech Stack
+
+- Python
+- Flask
+- NLP (spaCy, Scikit-learn)
+- PyMuPDF
+- React (Frontend - upcoming)
+
+## Status
+
+Project initialized. Backend development in progress.
