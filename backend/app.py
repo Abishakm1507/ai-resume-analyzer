@@ -2,7 +2,12 @@ from flask import Flask, request, jsonify
 from utils.pdf_parser import extract_text_from_pdf
 from utils.text_cleaner import clean_text, preprocess_with_spacy
 from utils.skill_extractor import extract_skills
-from utils.scorer import calculate_ats_score, calculate_skill_gap
+from utils.scorer import (
+    calculate_ats_score,
+    calculate_skill_gap,
+    calculate_skill_match_percentage,
+    generate_suggestions
+)
 import os
 
 app = Flask(__name__)
@@ -11,6 +16,8 @@ app = Flask(__name__)
 def home():
     return "AI Resume Analyzer Backend Running 🚀"
 
+
+# -------------------- BASIC UPLOAD --------------------
 
 @app.route("/upload", methods=["POST"])
 def upload_resume():
@@ -46,6 +53,8 @@ def upload_resume():
             os.remove(file_path)
 
 
+# -------------------- FULL ANALYSIS --------------------
+
 @app.route("/analyze", methods=["POST"])
 def analyze_resume():
 
@@ -72,12 +81,21 @@ def analyze_resume():
 
         # ATS + Gap analysis
         ats_score = calculate_ats_score(processed_text, job_description)
+
         missing_skills = calculate_skill_gap(skills, job_description)
+
+        skill_match_percentage = calculate_skill_match_percentage(
+            skills, job_description
+        )
+
+        suggestions = generate_suggestions(ats_score, missing_skills)
 
         return jsonify({
             "ats_score": ats_score,
+            "skill_match_percentage": skill_match_percentage,
             "skills_detected": skills,
-            "missing_skills": missing_skills
+            "missing_skills": missing_skills,
+            "suggestions": suggestions
         })
 
     except Exception as e:
